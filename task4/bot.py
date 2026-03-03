@@ -8,6 +8,8 @@ def input_error(func):
             return "Contact not found."
         except IndexError:
             return "Enter the argument for the command"
+        except Exception:
+            return "Something went wrong."
 
     return inner
 
@@ -53,34 +55,28 @@ def show_all(args: list[str], contacts: dict) -> str:
 
 def main() -> None:
     contacts = {}
+    handlers = {
+        "hello": lambda a, c: "How can I help you?",
+        "add": add_contact,
+        "change": change_contact,
+        "phone": show_phone,
+        "all": show_all,
+    }
+
     print("Welcome to the assistant bot!")
 
     while True:
         user_input = input("Enter a command: ")
         command, args = parse_input(user_input)
 
-        if command in ["close", "exit"]:
+        if command in ("close", "exit"):
             print("Good bye!")
             break
 
-        elif command == "hello":
-            print("How can I help you?")
-
-        elif command == "add":
-            print(add_contact(args, contacts))
-
-        elif command == "change":
-            print(change_contact(args, contacts))
-
-        elif command == "phone":
-            print(show_phone(args, contacts))
-
-        elif command == "all":
-            print(show_all(args, contacts))
-
-        else:
-            if command:
-                print("Invalid command.")
+        if command in handlers:
+            print(handlers[command](args, contacts))
+        elif command:
+            print("Invalid command.")
 
 
 if __name__ == "__main__":
